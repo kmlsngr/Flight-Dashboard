@@ -107,10 +107,10 @@ export enum PurchaseStatus {
   NONE = 'Yok'
 }
 
-// PAGE 1 Data Model
+// Added FlightRecord interface for Page 1 data
 export interface FlightRecord {
   id: string;
-  tarih: string; 
+  tarih: string;
   bolge: Bolge;
   kuyrukNumarasi: string;
   ucusSahasi: UcusSahasi;
@@ -126,6 +126,24 @@ export interface FlightRecord {
   hataliSatinAlimSayisi: number;
   basariliPaketAtamaSayisi: number;
   hataliPaketAtamaSayisi: number;
+}
+
+// Added AppUsageRecord interface for Page 3 data
+export interface AppUsageRecord {
+  id: string;
+  timeHour: number;
+  tarih: string;
+  flightId: string;
+  kuyrukNumarasi: string;
+  ucusNumarasi: string;
+  origin: string;
+  destination: string;
+  bolge: Bolge;
+  ucusSahasi: UcusSahasi;
+  ucusTipi: UcusTipi;
+  uygulamaTuru: AppType;
+  yolcuSayisi: number;
+  kullanimMiktariMB: number;
 }
 
 // PAGE 2 Data Model (Detailed)
@@ -145,101 +163,64 @@ export interface DetailedFlightRecord {
   disconnectedPax: number;
   connectedDevices: number;
   disconnectedDevices: number;
-  internetStartPax: number;
-  internetEndPax: number;
   usageAmountMB: number;
-  loginType: LoginTipi;
   membershipType: UyelikTipi;
-  appUsage: Record<string, number>;
-  hasDpiData: boolean;
+  // Added loginType to support Page 2 filtering
+  loginType: LoginTipi;
+  
+  // SATIN ALIM VERİLERİ (Source: Satın Alım Verisi)
+  purchaseStatus: PurchaseStatus;
   successfulPurchases: number;
   failedPurchases: number;
   failureReason: BasarisizOlmaNedeni;
   paymentMethod: OdemeYontemi;
-  purchasedPackage: PaketTuru;
+
+  // PAKET ATAMA VERİLERİ (Source: Paket Atama)
   packageName: string;
+  purchasedPackage: PaketTuru;
   packageAssignmentStatus: PaketAtamaDurumu;
   failedAssignmentReason: string;
   packageUsageMB: number;
 }
 
-// PAGE 3 Data Model
-export interface AppUsageRecord {
+// PAGE 4 Data Model
+export interface PassengerAnalysisRecord {
   id: string;
   timeHour: number;
+  userName: string;
+  name: string;
+  surname: string;
+  ip: string;
+  mac: string;
   flightId: string;
   kuyrukNumarasi: string;
   ucusNumarasi: string;
-  tarih: string;
+  ucusTarihi: string;
   origin: string;
   destination: string;
-  bolge: Bolge;
+  kabinTipi: KabinTipi;
+  userSegment: UserSegment;
   ucusSahasi: UcusSahasi;
   ucusTipi: UcusTipi;
-  uygulamaTuru: AppType;
-  yolcuSayisi: number;
-  kullanimMiktariMB: number;
+  connectionStatus: ConnectionStatus;
+  
+  // SATIN ALIM VERİLERİ
+  purchaseStatus: PurchaseStatus;
+  failedPurchaseReason: BasarisizOlmaNedeni;
+  paymentMethod: OdemeYontemi;
+  failedPurchaseCount: number;
+
+  // PAKET ATAMA VERİLERİ
+  usedPackageName: string;
+  packageAssignmentStatus: PaketAtamaDurumu;
+  dataUsageMB: number;
+  usedAppName: AppType | 'N/A';
+  sessionCount: number;
+  internetUsageStatus: string;
+  loginCount: number;
 }
 
-// PAGE 4 Data Model (Comprehensive List as requested)
-export interface PassengerAnalysisRecord {
-  id: string;
-  timeHour: number; // Time (Uçuşun x. saati)
-  userName: string; // User Name (TK_0003_...)
-  name: string; // Name
-  surname: string; // Surname
-  ip: string; // IP
-  mac: string; // MAC
-  nationality: string; // Nationality
-  passportNumber: string; // Passport Number
-  identityNumber: string; // Identity Number
-  flightId: string; // Flight Id
-  kuyrukNumarasi: string; // Kuyruk Numarası
-  ucusNumarasi: string; // Uçuş Numarası
-  ucusTarihi: string; // Uçuş Tarihi
-  origin: string; // Origin
-  destination: string; // Destination
-  kabinTipi: KabinTipi; // Kabin Tipi
-  userSegment: UserSegment; // User Segment
-  ucusSahasi: UcusSahasi; // Uçuş Sahası
-  ucusTipi: UcusTipi; // Uçuş Tipi
-  sessionStart: string; // Session Başlangıcı
-  sessionEnd: string; // Session Bitişi
-  connectionStatus: ConnectionStatus; // İnternet Bağlantı Başarı Durumu
-  internetUsageStart: string; // İnternet Kullanımı Başlangıcı
-  internetUsageEnd: string; // İnternet Kullanımı Bitişi
-  purchaseStatus: PurchaseStatus; // Satınalım Durumu
-  failedPurchaseReason: BasarisizOlmaNedeni; // Başarısız Satınalım Nedeni
-  paymentMethod: OdemeYontemi; // Ödeme Yöntemi
-  usedPackageName: string; // Kullanılan Paket ismi
-  packageStartTime: string; // Paketin Kullanıma Başlandığı Zaman
-  dataUsageMB: number; // Veri Kullanım Miktarı (DPI)
-  usedAppName: AppType | 'N/A'; // Kullanılan Uygulama Adı
-  sessionCount: number; // Session Sayısı
-  internetUsageStatus: string; // İnternet Kullanım Durumu (Sayısı)
-  loginCount: number; // Login Sayısı
-  failedPurchaseCount: number; // Başarısız Satınalım Sayısı
-}
-
-/**
- * FilterState interface for the generic FilterBar component.
- * Added to resolve the missing export error in components/FilterBar.tsx.
- */
-export interface FilterState {
-  startDate: string;
-  endDate: string;
-  bolge: Bolge[];
-  kuyrukNumarasi: string[];
-  ucusSahasi: UcusSahasi[];
-  ucusTipi: UcusTipi | null;
-  kabinTipi: KabinTipi[];
-  uyelikTipi: UyelikTipi[];
-  loginTipi: LoginTipi[];
-  satinAlinanPaketTuru: PaketTuru[];
-  minBaglananYolcu: number;
-  maxBaglananYolcu: number;
-}
-
+// Filter States
 export interface GeneralFilterState {
   startDate: string;
   endDate: string;
@@ -251,6 +232,12 @@ export interface GeneralFilterState {
   uyelikTipi: UyelikTipi[];
   loginTipi: LoginTipi[];
   satinAlinanPaketTuru: PaketTuru[];
+}
+
+// Added FilterState interface to support old/generic FilterBar component
+export interface FilterState extends GeneralFilterState {
+  minBaglananYolcu: number;
+  maxBaglananYolcu: number;
 }
 
 export interface DetailedFilterState {
